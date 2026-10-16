@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      (function () {
+        var saved = null;
+        try {
+          saved = localStorage.getItem("mini-expense-tracker.theme");
+        } catch (error) {
+          saved = null;
+        }
+        document.documentElement.setAttribute("data-theme", saved === "light" ? "light" : "dark");
+      })();
+    </script>
+    <title>Mini Expense Tracker</title>
+    <meta
+      name="description"
+      content="Track income and expenses in your browser. Totals, categories, and history stay on this device."
+    >
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237c3aed'/%3E%3Cpath d='M8 20.5 13 11l4 6 3-3.5L24 20.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Personal finance</p>
+          <h1>Mini Expense Tracker</h1>
+          <p class="lede">
+            Add income and expenses, watch your balance, and see where money goes.
+            Everything stays in this browser.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false">
+            Light theme
+          </button>
+          <p class="storage-pill">Saved on this device</p>
+        </div>
+      </header>
+
+      <noscript class="noscript">
+        This tracker needs JavaScript. Enable it, then refresh the page.
+      </noscript>
+
+      <section class="summary" aria-label="Totals">
+        <article class="summary-card">
+          <p class="summary-label">Total income</p>
+          <p class="summary-value income" id="total-income">$0.00</p>
+        </article>
+        <article class="summary-card">
+          <p class="summary-label">Total expenses</p>
+          <p class="summary-value expense" id="total-expenses">$0.00</p>
+        </article>
+        <article class="summary-card summary-card-balance" id="balance-card">
+          <p class="summary-label">Current balance</p>
+          <p class="summary-value" id="balance">$0.00</p>
+          <p class="summary-note" id="balance-note">Add a transaction to get started.</p>
+        </article>
+      </section>
+
+      <div class="layout">
+        <section class="panel" aria-labelledby="form-heading">
+          <div class="panel-heading">
+            <h2 id="form-heading">Add a transaction</h2>
+            <p>Description, amount, category, and date are all required.</p>
+          </div>
+
+          <form id="transaction-form" novalidate>
+            <fieldset class="type-fieldset">
+              <legend>Type</legend>
+              <div class="type-toggle">
+                <input type="radio" name="type" id="type-expense" value="expense" checked>
+                <label for="type-expense">Expense</label>
+                <input type="radio" name="type" id="type-income" value="income">
+                <label for="type-income">Income</label>
+              </div>
+            </fieldset>
+
+            <label class="field">
+              <span>Description</span>
+              <input
+                id="description"
+                name="description"
+                type="text"
+                maxlength="60"
+                placeholder="Groceries, salary, bus fare..."
+                autocomplete="off"
+                required
+              >
+            </label>
+
+            <div class="field-row">
+              <label class="field">
+                <span>Amount</span>
+                <input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  inputmode="decimal"
+                  min="0.01"
+                  max="9999999.99"
+                  step="0.01"
+                  placeholder="0.00"
+                  required
+                >
+              </label>
+
+              <label class="field">
+                <span>Category</span>
+                <select id="category" name="category" required></select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Date</span>
+              <input id="date" name="date" type="date" required>
+            </label>
+
+            <div id="form-errors" class="form-errors" role="alert" hidden></div>
+            <p id="status" class="status" role="status" aria-live="polite"></p>
+
+            <button class="btn-primary" type="submit">Add transaction</button>
+          </form>
+        </section>
+
+        <section class="panel" aria-labelledby="breakdown-heading">
+          <div class="panel-heading">
+            <h2 id="breakdown-heading">Category breakdown</h2>
+            <p>Each bar is that category’s share of income or expenses.</p>
+          </div>
+          <div id="breakdown"></div>
+        </section>
+      </div>
+
+      <section class="panel list-panel" aria-labelledby="history-heading">
+        <div class="list-heading">
+          <div>
+            <h2 id="history-heading">Transactions</h2>
+            <p id="transaction-count">0 shown</p>
+          </div>
+          <div class="filters" role="group" aria-label="Filter transactions">
+            <button type="button" class="chip is-active" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="chip" data-filter="income" aria-pressed="false">Income</button>
+            <button type="button" class="chip" data-filter="expense" aria-pressed="false">Expenses</button>
+          </div>
+        </div>
+        <ul id="transaction-list" class="transactions"></ul>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
